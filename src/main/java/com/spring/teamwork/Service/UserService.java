@@ -8,7 +8,7 @@ import com.spring.teamwork.model.VO.UserVO;
 public interface UserService {
 
     /** 注册：用户名查重 → BCrypt 加密 → 插入 */
-    UserVO.RegisterVO register(AuthRequest.RegisterRequest req);
+    SysUser register(AuthRequest.RegisterRequest req);
 
     /** 登录：校验用户名密码 → Sa-Token 签发 → 返回 token + 基础信息 */
     UserVO.LoginVO login(AuthRequest.LoginRequest req);
