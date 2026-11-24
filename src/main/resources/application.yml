@@ -8,3 +8,7 @@ spring:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/bet_platform?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD}
+
+# 见证人邀请链接的前端页面地址（接口 3.4 拼 inviteUrl 用），部署时用环境变量 INVITE_BASE_URL 覆盖
+invite:
+  base-url: ${INVITE_BASE_URL:http://localhost:5173}
