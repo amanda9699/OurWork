@@ -9,6 +9,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
+//分页
 public class PageVO<T> {
     private Long total;
     private Long page;

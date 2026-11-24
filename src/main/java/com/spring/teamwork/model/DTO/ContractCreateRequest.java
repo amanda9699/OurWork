@@ -21,3 +21,4 @@ public class ContractCreateRequest {
     @Min(value = 1, message = "押金至少为 1")
     private Integer deposit;
 }
+
