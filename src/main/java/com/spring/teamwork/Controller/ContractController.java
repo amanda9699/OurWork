@@ -2,11 +2,14 @@ package com.spring.teamwork.Controller;
 
 import com.spring.teamwork.Service.ContractService;
 import com.spring.teamwork.model.DTO.ContractCreateRequest;
+import com.spring.teamwork.model.DTO.ProofRequest;
 import com.spring.teamwork.model.Enum.ContractStatus;
 import com.spring.teamwork.model.PageVO;
 import com.spring.teamwork.model.Result;
+import com.spring.teamwork.model.VO.AcceptInviteVO;
 import com.spring.teamwork.model.VO.ContractDetailVO;
 import com.spring.teamwork.model.VO.ContractListVO;
+import com.spring.teamwork.model.VO.WitnessInviteVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -45,5 +48,23 @@ public class ContractController {
     @GetMapping("/contracts/{contractId}")
     public ResponseEntity<Result<ContractDetailVO>> contractDetail(@PathVariable Integer contractId){
         return ResponseEntity.ok(contractService.getContractDetail(contractId));
+    }
+
+    @PostMapping("/contracts/{contractId}/witness-invite")
+    public ResponseEntity<Result<WitnessInviteVO>> createInvite(@PathVariable Integer contractId){
+        Long userId = 1L;
+        return ResponseEntity.ok(contractService.createInviteUrl(contractId,userId));
+    }
+
+    @PostMapping("/witness-invites/{inviteCode}/accept")
+    public ResponseEntity<Result<AcceptInviteVO>> acceptInvite(@PathVariable String inviteCode){
+        Long userId = 1L;
+        return ResponseEntity.ok(contractService.accept(inviteCode,userId));
+    }
+
+    @PostMapping("/contracts/{contractId}/proof")
+    public ResponseEntity<Result<ContractDetailVO.ProofVO>> submit(@PathVariable Long contractId, @RequestBody @Validated ProofRequest request){
+        Long userId = 1L;
+        return ResponseEntity.ok(contractService.submitProof(contractId, request, userId));
     }
 }
