@@ -42,7 +42,6 @@ public class ContractDetailVO {
     public static class WitnessVO {
         private Long userId;
         private String nickname;
-        /** 未完结时对非本人脱敏为 null */
         private Verdict vote;
         private LocalDateTime votedAt;
     }
