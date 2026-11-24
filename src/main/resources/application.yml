@@ -8,3 +8,40 @@ spring:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/bet_platform?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD}
+#    Redis
+  data:
+    redis:
+          host: ${REDIS_HOST:localhost}
+          port: ${REDIS_PORT:6379}
+          password: ${REDIS_PASSWORD:}        # 没有密码就留空或删掉这行
+          database: 0
+          timeout: 5s
+          lettuce:
+            pool:
+              max-active: 16
+              max-idle: 8
+              min-idle: 2
+              max-wait: 3s
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.spring.teamwork.model.Entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: isDeleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+sa-token:
+  token-name: Authorization
+  timeout: 86400
+  active-timeout: -1                   # 无自动下线，跟随 timeout
+  is-concurrent: true                 # 多端同时登录
+  is-share: false                      # 每次登录独立 token
+  token-style: uuid
+  is-log: false
+
+#demo:
+#  enabled:false

@@ -1,9 +1,10 @@
 package com.spring.teamwork.model.Entity;
 
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 @TableName("sys_user")
@@ -27,4 +28,8 @@ public class SysUser extends BaseEntity {
 
     @TableLogic
     private Integer isDeleted;
+    @TableField(fill=FieldFill.INSERT)
+    private LocalDateTime createdAt;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updatedAt;
 }
