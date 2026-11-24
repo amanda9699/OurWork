@@ -3,10 +3,7 @@ package com.spring.teamwork.Service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.spring.teamwork.Exception.common.BizException;
-import com.spring.teamwork.Mapper.AccTransactionMapper;
-import com.spring.teamwork.Mapper.BetContractWitnessMapper;
-import com.spring.teamwork.Mapper.ContractMapper;
-import com.spring.teamwork.Mapper.SysUserMapper;
+import com.spring.teamwork.Mapper.*;
 import com.spring.teamwork.Service.ContractService;
 import com.spring.teamwork.model.DTO.ContractCreateRequest;
 import com.spring.teamwork.model.Entity.AccTransaction;
@@ -40,7 +37,6 @@ public class ContractServiceImpl implements ContractService {
     private BetContractWitnessMapper betContractWitnessMapper;
     @Autowired
     private PlatformTransactionManager transactionManager;
-
     @Override
     public Result<ContractDetailVO> create(ContractCreateRequest request, Long userId) {
         TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
@@ -48,11 +44,11 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public Result<PageVO<ContractListVO>> getMyContract(String status, Integer page, Integer size, Long userId) {
+    public Result<PageVO<ContractListVO>> getMyContract(ContractStatus status, Integer page, Integer size, Long userId) {
         LambdaQueryWrapper<BetContract> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.eq(BetContract::getUserId, userId);
         if (status != null) {
-            queryWrapper.eq(BetContract::getStatus, ContractStatus.valueOf(status));
+            queryWrapper.eq(BetContract::getStatus, status);
         }
         queryWrapper.orderByDesc(BetContract::getCreatedAt);
         //分页查询
@@ -72,6 +68,40 @@ public class ContractServiceImpl implements ContractService {
                     return vo;
                 }).toList();
         return Result.ok(new PageVO<>(betContractPage.getTotal(), betContractPage.getCurrent(), betContractPage.getSize(), records));
+    }
+
+    @Override
+    public Result<ContractDetailVO> getContractDetail(Integer contractId) {
+        BetContract betContract = contractMapper.selectById(contractId);
+        //组装ContractDetailVO（含有contract的部分）
+        ContractDetailVO contractDetailVO = new ContractDetailVO();
+        contractDetailVO.setContractId(betContract.getId());
+        contractDetailVO.setTitle(betContract.getTitle());
+        contractDetailVO.setDescription(betContract.getDescription());
+        contractDetailVO.setCategory(betContract.getCategory());
+        contractDetailVO.setStatus(betContract.getStatus());
+        contractDetailVO.setDeposit(betContract.getDeposit());
+        contractDetailVO.setDeadline(betContract.getDeadline());
+        contractDetailVO.setCreatedAt(betContract.getCreatedAt());
+        contractDetailVO.setSettledAt(betContract.getSettledAt());
+        contractDetailVO.setSettleResult(betContract.getSettleResult());
+        contractDetailVO.setViewCount(betContract.getViewCount());
+        //组装ContractDetailVO的owner部分，从user表里查
+        SysUser user = sysUserMapper.selectById(betContract.getUserId());
+        ContractDetailVO.OwnerVO ownerVO = new ContractDetailVO.OwnerVO();
+        ownerVO.setUserId(user.getId());
+        ownerVO.setNickname(user.getNickname());
+        contractDetailVO.setOwner(ownerVO);
+        //组装 witness
+        List<ContractDetailVO.WitnessVO> witnessVOList = betContractWitnessMapper.getWitnesses(Long.valueOf(contractId));
+        contractDetailVO.setWitnesses(witnessVOList);
+        //组装 proofVO
+        ContractDetailVO.ProofVO proofVO = new ContractDetailVO.ProofVO();
+        proofVO.setContent(betContract.getProofContent());
+        proofVO.setImages(betContract.getProofImages());
+        proofVO.setSubmittedAt(betContract.getProofSubmittedAt());
+        contractDetailVO.setProof(proofVO);
+        return Result.ok(contractDetailVO);
     }
 
     private Result<ContractDetailVO> doCreate(ContractCreateRequest request, Long userId) {

@@ -2,6 +2,7 @@ package com.spring.teamwork.Controller;
 
 import com.spring.teamwork.Service.ContractService;
 import com.spring.teamwork.model.DTO.ContractCreateRequest;
+import com.spring.teamwork.model.Enum.ContractStatus;
 import com.spring.teamwork.model.PageVO;
 import com.spring.teamwork.model.Result;
 import com.spring.teamwork.model.VO.ContractDetailVO;
@@ -31,14 +32,18 @@ public class ContractController {
         return ResponseEntity.status(result.getCode()).body(result);
     }
 
-    @GetMapping("/contracts//contracts/my")
-    public ResponseEntity<Result<PageVO<ContractListVO>>> myContract(@RequestParam String status,@RequestParam Integer page,
-                                                             @RequestParam Integer size){
+    @GetMapping("/contracts/my")
+    public ResponseEntity<Result<PageVO<ContractListVO>>> myContract(
+            @RequestParam(required = false) ContractStatus status,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size){
         Long userId = 1L;
-        Result<PageVO<ContractListVO>> result = contractService.getMyContract(status,page,size,userId);
-        if(result.getCode() == 0){
-            return ResponseEntity.ok(result);
-        }
-        return ResponseEntity.status(result.getCode()).body(result);
+        size = Math.min(size, 50);
+        return ResponseEntity.ok(contractService.getMyContract(status, page, size, userId));
+    }
+
+    @GetMapping("/contracts/{contractId}")
+    public ResponseEntity<Result<ContractDetailVO>> contractDetail(@PathVariable Integer contractId){
+        return ResponseEntity.ok(contractService.getContractDetail(contractId));
     }
 }
