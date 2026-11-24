@@ -5,6 +5,7 @@ import com.spring.teamwork.model.Result;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -23,4 +24,9 @@ public class GlobalExceptionHandler {
     public Result<?> handleValid(MethodArgumentNotValidException e) {
         return Result.fail(400, e.getBindingResult().getFieldError().getDefaultMessage());
     }
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public Result<?> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
+        return Result.fail(400, "参数类型不合法: " + e.getName());
+    }
+
 }
