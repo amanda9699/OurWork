@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class NoticeReadRequest {
-    @NotNull(message = "通知id不能为空")
-    private Long noticeId;
+    private Long[] ids;
+    private Boolean all;
+
 }
